@@ -1,0 +1,31 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /rfqs/{rfqId} {
+      allow read, write: if request.auth != null && resource.data.contractorId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.contractorId == request.auth.uid;
+      
+      allow read: if request.auth != null 
+                  && resource.data.status == 'sent' 
+                  && request.auth.uid in resource.data.matchingSupplierIds;
+    }
+
+    match /bids/{bidId} {
+      allow read: if request.auth != null && (
+        resource.data.supplierId == request.auth.uid ||
+        get(/databases/$(database)/documents/rfqs/$(resource.data.rfqId)).data.contractorId == request.auth.uid
+      );
+      
+      allow create: if request.auth != null && request.resource.data.supplierId == request.auth.uid;
+      
+      allow update: if request.auth != null && 
+        get(/databases/$(database)/documents/rfqs/$(resource.data.rfqId)).data.contractorId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['selected']);
+    }
+  }
+}
