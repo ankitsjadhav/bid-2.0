@@ -25,8 +25,7 @@ export function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/contractor/dashboard', request.url));
         }
 
-        if (path === '/onboarding' && role) {
-        }
+
     } else {
         if (path !== '/onboarding') {
             return NextResponse.redirect(new URL('/onboarding', request.url));
