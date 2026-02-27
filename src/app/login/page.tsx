@@ -289,10 +289,6 @@ export default function LoginPage() {
                     </CardFooter>
                 </Card>
 
-                {/* Footer text */}
-                <p className="absolute bottom-8 text-center text-sm text-slate-400">
-                    &copy; {new Date().getFullYear()} Bid 2.0. All rights reserved.
-                </p>
             </div>
         </div>
     );
